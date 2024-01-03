@@ -44,7 +44,7 @@ opt.splitbelow = true -- split horizontal window to the bottom
 opt.swapfile = false
 
 --cmd height
-opt.cmdheight = 0
+--opt.cmdheight = 0
 
 --folds
 vim.o.foldcolumn = '1' -- '0' is not bad
@@ -64,6 +64,17 @@ vim.o.timeoutlen = 300
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
+
+
+--opt.statusline="%f"               -- filename relative to current $PWD
+--opt.statusline="%h"              -- help file flag
+--opt.statusline="%m"              -- modified flag
+--opt.statusline="%r"              -- readonly flag
+--opt.statusline="\\ [%{&ff}]"      -- Fileformat [unix]/[dos] etc...
+--opt.statusline='\\ (%{strftime(\\"%H:%M\\ %d/%m/%Y\\",getftime(expand(\\"%:p\\")))})' --last modified timestamp
+--opt.statusline="%="              -- Rest: right align
+--opt.statusline="%l,%c%V"         -- Position in buffer: linenumber, column, virtual column
+--opt.statusline="\\ %P"            -- Position in buffer: Percentage
 
 --setting shell to powershell
 if vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1 or vim.fn.has('win16') == 1 then
@@ -106,6 +117,7 @@ vim.g.netrw_keepdir = 0
 -- - :edit a folder to open a file browser
 -- - <CR>/v/t to open in an h-split/v-split/tab
 -- - check |netrw-browse-maps| for more mappings
+
 --neovide
 if vim.g.neovide then
   -- Put anything you want to happen only in Neovide here
@@ -120,7 +132,6 @@ if vim.g.neovide then
   -- vim.g.neovide_fullscreen = true
   vim.g.neovide_refresh_rate_idle = 5
   vim.g.neovide_refresh_rate = 60
-  vim.g.neovide_theme = 'gruvbox'
 end
 
 
@@ -148,7 +159,7 @@ keymap.set("n", "]b", "<cmd>bprev<cr>", { desc = "Switch to previous buffer" })
 keymap.set("n", "'b", "<cmd>bd<cr>", { desc = "Switch close current buffer" })
 
 --buffers 
-keymap.set("n", "<leader>fb", "<CR>:Lexplore<CR>", { desc = "buffer switch" })
+keymap.set("n", "<leader>fb", ":ls<CR>:b<Space>", { desc = "buffer switch" })
 --keymap.set("n", "<leader:", "<cmd>bprev<cr>", { desc = "Switch to previous buffer" })
 
 --terminal navigation
