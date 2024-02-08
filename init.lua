@@ -66,31 +66,31 @@ vim.o.completeopt = "menuone,noselect"
 
 --setting shell to powershell
 if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 or vim.fn.has("win16") == 1 then
-    local powershell_options = {
-        shell = vim.fn.executable "pwsh" == 1 and "pwsh" or "powershell",
-        shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
-        shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
-        shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
-        shellquote = "",
-        shellxquote = ""
-    }
-    for option, value in pairs(powershell_options) do
-        vim.opt[option] = value
-    end
+  local powershell_options = {
+    shell = vim.fn.executable "pwsh" == 1 and "pwsh" or "powershell",
+    shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
+    shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
+    shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
+    shellquote = "",
+    shellxquote = ""
+  }
+  for option, value in pairs(powershell_options) do
+    vim.opt[option] = value
+  end
 end
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup("YankHighlight", {clear = true})
 vim.api.nvim_create_autocmd(
-    "TextYankPost",
-    {
-        callback = function()
-            vim.highlight.on_yank()
-        end,
-        group = highlight_group,
-        pattern = "*"
-    }
+"TextYankPost",
+{
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+  group = highlight_group,
+  pattern = "*"
+}
 )
 -- FILE BROWSING:
 -- Tweaks for browsing
@@ -98,7 +98,7 @@ vim.g.netrw_banner = 0 -- disable annoying banner
 vim.g.netrw_altv = 1
 vim.g.netrw_browse_split = 4 -- open in prior window
 vim.g.netrw_liststyle = 3 -- tree view
-vim.g.netrw_winsize = 25
+vim.g.netrw_winsize = 20
 vim.g.netrw_keepdir = 0
 --vim.g.netrw_list_hide=netrw_gitignore#Hide()
 --vim.g.netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
@@ -110,24 +110,27 @@ vim.g.netrw_keepdir = 0
 
 --neovide
 if vim.g.neovide then
-    -- Put anything you want to happen only in Neovide here
+  -- Put anything you want to happen only in Neovide here
 
-    vim.o.guifont = "JetBrainsMono NFM:h12" -- text below applies for VimScript
-    vim.g.neovide_padding_top = 0
-    vim.g.neovide_padding_bottom = 0
-    vim.g.neovide_padding_right = 0
-    vim.g.neovide_padding_left = 0
+  vim.o.guifont = "JetBrainsMono NFM:h12" -- text below applies for VimScript
+  vim.g.neovide_padding_top = 0
+  vim.g.neovide_padding_bottom = 0
+  vim.g.neovide_padding_right = 0
+  vim.g.neovide_padding_left = 0
 
-    vim.g.neovide_cursor_antialiasing = true
-    -- vim.g.neovide_fullscreen = true
-    vim.g.neovide_refresh_rate_idle = 5
-    vim.g.neovide_refresh_rate = 60
+  vim.g.neovide_cursor_antialiasing = true
+  -- vim.g.neovide_fullscreen = true
+  vim.g.neovide_refresh_rate_idle = 5
+  vim.g.neovide_refresh_rate = 60
 end
 
 --keymaps
 local keymap = vim.keymap -- for conciseness
 
 -- General Keymaps
+
+--netrw
+keymap.set("n", "<leader>e", "<cmd>Lexplore<CR>", {desc = "Open netrw"})
 
 -- use jk to exit insert mode
 keymap.set("i", "jk", "<ESC>", {desc = "Exit insert mode with jk"})
@@ -153,10 +156,9 @@ keymap.set("n", "<C-1>", ":b1<CR>", {desc = "buffer switch 1"})
 keymap.set("n", "<C-2>", ":b2<CR>", {desc = "buffer switch 2"})
 keymap.set("n", "<C-3>", ":b3<CR>", {desc = "buffer switch 3"})
 keymap.set("n", "<C-4>", ":b4<CR>", {desc = "buffer switch 4"})
---keymap.set("n", "<leader:", "<cmd>bprev<cr>", { desc = "Switch to previous buffer" })
 
 --open new file
-keymap.set("n", "<leader>o", ":e<Space>", {desc = "open new file"})
+keymap.set("n", "<leader>ff", ":e<Space>", {desc = "open new file"})
 
 --terminal navigation
 keymap.set("n", "<C-h>", "<cmd>wincmd h<cr>", {desc = "Terminal left window navigation"})
@@ -176,49 +178,3 @@ keymap.set("n", "<C-Down>", "<cmd>resize +2<CR>", {desc = "Resize split down"})
 keymap.set("n", "<C-Left>", "<cmd>vertical resize -2<CR>", {desc = "Resize split left"})
 keymap.set("n", "<C-Right>", "<cmd>vertical resize +2<CR>", {desc = "Resize split right"})
 
---netrw
-keymap.set("n", "<leader>e", "<cmd>Lexplore<CR>", {desc = "Open netrw"})
-
---hop navigation
--- keymap.set("n", "s", "<cmd>HopWord<cr>", { desc = "Hop word" })
-
---status line
-local function git_branch()
-    local branch = vim.fn.system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-    if string.len(branch) > 0 then
-        return branch
-    else
-        return ":"
-    end
-end
-
-local function statusline()
-    local set_color_1 = "%#PmenuSel#"
-    local branch = git_branch()
-    local set_color_2 = "%#LineNr#"
-    local file_name = " %f"
-    local modified = "%m"
-    local align_right = "%="
-    local fileencoding = " %{&fileencoding?&fileencoding:&encoding}"
-    local fileformat = " [%{&fileformat}]"
-    local filetype = " %y"
-    local percentage = " %p%%"
-    local linecol = " %l:%c"
-
-    return string.format(
-        "%s %s %s%s%s%s%s%s%s%s%s",
-        set_color_1,
-        branch,
-        set_color_2,
-        file_name,
-        modified,
-        align_right,
-        filetype,
-        fileencoding,
-        fileformat,
-        percentage,
-        linecol
-    )
-end
-
-vim.opt.statusline = statusline()
